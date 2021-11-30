@@ -186,6 +186,8 @@ if __name__ == "__main__":
         if(i == 100):
             state_key = env.reset()
         '''
+        # 没有设置break出循环的条件: 1）timeout 2)reset
+        # 需要手动停止
         while True:
             for j in range(0,4):
                 print()
@@ -305,8 +307,8 @@ if __name__ == "__main__":
                     next_state = int(potential_skip_obj[0:len(potential_skip_obj)-4])
                     reward = -500
 
+            # print current info
             agent.memory_buffer.show()
-
             print("old act = " + old_activity_name)
             print("new act = " + new_activity_name)
             print("old state = " + str(current_state))
