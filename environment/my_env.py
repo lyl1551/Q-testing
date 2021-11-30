@@ -1,22 +1,15 @@
 import os
 from uiautomator import Device
 
-
+# abandoned
+# not used
 class qt_Environment():
     def __init__(self):
-        1
+        print()
 
     def reset(self):
-        cmd = 'return to the beginning ? how ? '
+        cmd = 'return to the beginning'
         cmd = ''
         os.system(cmd)
         state_key = 1
         return state_key
-
-    def step(self, action):
-        Device.click()
-        return 0
-
-    def parse_state(self, state):
-        # ignore things like text
-        return state

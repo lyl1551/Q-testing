@@ -6,7 +6,7 @@ import os
 class extractor:
     # 解析xml，返回树
     def parsexml(self, count):
-        file = open("C:/lyl/Q-testing/output/xml/" + count + ".xml", "r+")
+        file = open("./output/xml/" + count + ".xml", "r+")
         tree = file.read()
         tree = re.sub(r"<node", "{", tree)
         tree = re.sub(r"/>", "}", tree)
@@ -16,9 +16,9 @@ class extractor:
         return tree
     # 保存树
     def write(self, count, act_name, tree):
-        if not (os.path.exists("C:/lyl/Q-testing/output/tree/" + act_name + "/")):
-            os.mkdir("C:/lyl/Q-testing/output/tree/" + act_name + "/")
-        target = open("C:/lyl/Q-testing/output/tree/" + act_name + "/" + count + ".txt", "w+")
+        if not (os.path.exists("./output/tree/" + act_name + "/")):
+            os.mkdir("./output/tree/" + act_name + "/")
+        target = open("./output/tree/" + act_name + "/" + count + ".txt", "w+")
         print("tree= " + tree)
         target.write(tree)
         target.close()

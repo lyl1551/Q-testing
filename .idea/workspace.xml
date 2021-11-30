@@ -3,8 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="1523b878-d7e6-449b-8a5f-c55f8effbddb" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/window_dump.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/environment/my_env.py" beforeDir="false" afterPath="$PROJECT_DIR$/environment/my_env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/my_qlearning.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_qlearning.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vector_extractor/my_extractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/vector_extractor/my_extractor.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +97,7 @@
       <option name="presentableId" value="Default" />
       <updated>1638262113483</updated>
       <workItem from="1638262114722" duration="5920000" />
-      <workItem from="1638269802776" duration="979000" />
+      <workItem from="1638269802776" duration="1631000" />
     </task>
     <servers />
   </component>
@@ -116,7 +117,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Q_testing$my_qlearning.coverage" NAME="my_qlearning Coverage Results" MODIFIED="1638267497222" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Q_testing$my_qlearning.coverage" NAME="my_qlearning Coverage Results" MODIFIED="1638271888336" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Q_testing$main.coverage" NAME="main Coverage Results" MODIFIED="1638262127885" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

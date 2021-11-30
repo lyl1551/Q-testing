@@ -186,8 +186,8 @@ if __name__ == "__main__":
         if(i == 100):
             state_key = env.reset()
         '''
-        # 没有设置break出循环的条件: 1）timeout 2)reset
-        # 需要手动停止
+        # 没有设置break出while循环的条件: 1）timeout 2)reset
+        # 需要手动停止 或者把最后一行的break的注释去掉
         while True:
             for j in range(0,4):
                 print()
@@ -266,10 +266,10 @@ if __name__ == "__main__":
             potential_skip_obj = ""
             # 比较当前activity中所有tree与当前tree的相似度
             # 如果Activity文件夹都不存在，说明是新的Activity，直接存储
-            if not (os.path.exists("C:/lyl/Q-testing/output/tree/" + new_activity_name + "/")):
-                os.mkdir("C:/lyl/Q-testing/output/tree/" + new_activity_name + "/")
-            # if not (os.path.exists("./output/tree/" + new_activity_name + "/")):
-            #     os.mkdir("./output/tree/" + new_activity_name + "/")
+            # if not (os.path.exists("C:/lyl/Q-testing/output/tree/" + new_activity_name + "/")):
+            #     os.mkdir("C:/lyl/Q-testing/output/tree/" + new_activity_name + "/")
+            if not (os.path.exists("./output/tree/" + new_activity_name + "/")):
+                os.mkdir("./output/tree/" + new_activity_name + "/")
                 agent.memory_buffer.store(new_activity_name, vector)
                 ext.write(str(vector), new_activity_name, new_tree)
                 next_state = xml_count
@@ -328,3 +328,4 @@ if __name__ == "__main__":
 
             # if done:
             #    break
+            # break
