@@ -6,9 +6,9 @@
 
 - Python: 3.8
 
-- uiautomator2:
-
 - Android SDK: API 20 (make sure `adb` and `aapt` commands are available)
+
+- uiautomator2
 
   ```
   pip3 install -U uiautomator2
