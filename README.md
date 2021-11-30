@@ -40,7 +40,7 @@ python my_qlearning.py
 
  https://box.nju.edu.cn/f/410a3682bc9b454fb104/ 
 
-视频太长，没做字幕。建议使用AI字幕软件提高体验
+视频太长，没做字幕。建议使用AI字幕软件提高观看体验
 
 
 
@@ -66,7 +66,9 @@ write():    在./output/tree中按Activity_name保存控件树
 
 /tree下按Activity_name保存了所有不相似的控件树
 
-#### agent（位于my_qlearning中的一个class）
+#### agent
+
+**【位于my_qlearning中的一个class】**
 
 self.q_table: 机器人采用Q-learning策略所需要的q_table
 
@@ -76,3 +78,22 @@ learn(): 依据【奖励、新旧Activity名称、新旧状态、action】来更
 
 pick_action(): 根据ε-greedy策略，选择出一个执行的动作
 
+#### my_qlearning
+
+代码执行模块，利用了上述4个模块（除environment）
+
+代码细致讲解见视频or见代码注释
+
+
+
+#### test.xml
+
+能从移动端获取的xml样例
+
+#### dumpPhone-release.apk
+
+一个可安装的apk文件，可以用于代码运行（安装后打开，再运行代码）
+
+#### 工具复现ppt.pptx
+
+用于视频讲解的ppt，简要介绍了论文内容
