@@ -6,7 +6,7 @@ import os
 class extractor:
     # 解析xml，返回树
     def parsexml(self, count):
-        file = open("./output/xml/" + count + ".xml", "r+")
+        file = open("./output/xml/" + count + ".xml", "r+",encoding="utf-8")
         tree = file.read()
         tree = re.sub(r"<node", "{", tree)
         tree = re.sub(r"/>", "}", tree)

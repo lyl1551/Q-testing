@@ -6,6 +6,7 @@ import time
 from environment import my_env
 from memory import memory_buffer
 from vector_extractor import my_extractor
+from collections import defaultdict
 
 import uiautomator2 as u2
 
@@ -18,7 +19,8 @@ class Q_Learning_Agent:
         self.discount_factor = 0.9
         self.epsilon = 0.2
         # <<1>> q_table = ∅
-        self.q_table = {}
+        # self.q_table = {}
+        self.q_table = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
         '''
         三重字典:
         structure:
@@ -71,20 +73,19 @@ class Q_Learning_Agent:
             self.q_table[activity_name][state_key][action] = 0
 
         old_q = self.q_table[activity_name][state_key][action]
-        future = -10000
+        future = 0
         if self.q_table.__contains__(new_activity_name):
-            if self.q_table[new_activity_name]. __contains__(next_state_key):
-                for key,value in self.q_table[new_activity_name][next_state_key].items():
-                    future = max(value,future)
+            if self.q_table[new_activity_name].__contains__(next_state_key):
+                future = max(self.q_table[new_activity_name][next_state_key].values())
             else:
                 future = 1000
         else:
             future = 1000
-        new_q = old_q + self.learning_rate * ( reward + self.discount_factor * future - old_q)
+        new_q = old_q + self.learning_rate * (reward + self.discount_factor * future - old_q)
         self.q_table[activity_name][state_key][action] = new_q
 
     # 在指定的activity和state下，选择出一个动作
-    def pick_action(self, activity_name, state_key, ui_event_num):
+    def pick_action(self, activity, state, ui_event_num):
         """
                 action              probability
         Q(s,a) with max reward          1-ε
@@ -96,24 +97,21 @@ class Q_Learning_Agent:
         if random_number < self.epsilon:
             if random_number < self.epsilon / 2:
                 # choose random UI_event
-                action = str(np.random.randint(1,ui_event_num))
+                action = str(np.random.randint(1, ui_event_num))
             else:
                 # choose random system_event
-                action = self.system_actions[np.random.randint(0,2)]
+                action = self.system_actions[np.random.randint(0, 2)]
         else:
             # choosing from q_table
-            max_value = -10000
-            candidate_list=[]
+            max_value = max(self.q_table[activity][state].values())
+            candidate_list = []
             # find the state_key with max reward
-            for key, value in self.q_table[activity_name][state_key].items():
-                if value > max_value:
-                    candidate_list.clear()
+            for key, value in self.q_table[activity][state].items():
+                if value == max_value:
                     candidate_list.append(key)
-                    max_value = value
-                elif value == max_value:
-                    candidate_list.append(key)
-            action = str(candidate_list[np.random.randint(0,len(candidate_list))])
+            action = str(candidate_list[np.random.randint(0, len(candidate_list))])
         return action
+
 
 if __name__ == "__main__":
     # 暂时没做自动清空
@@ -121,6 +119,10 @@ if __name__ == "__main__":
     agent = Q_Learning_Agent()
     ext = my_extractor.extractor()
     d = u2.connect()
+    # How long (in seconds) will wait for a new command from the client
+    # before assuming the client quit and ending the uiautomator service
+    # set to 2 hour
+    d.set_new_command_timeout(7200)
     '''
     print("starting apk")
     apk_path = "C:/Users/LYL/Desktop/Qtesting/dumpPhone-release.apk"
@@ -153,15 +155,18 @@ if __name__ == "__main__":
     # get xml structure
     xml_path = "./output/xml/" + str(xml_count) + ".xml"
     xml = d.dump_hierarchy()
-    file = open(xml_path, "w")
+    file = open(xml_path, "w", encoding="utf-8")
     file.write(xml)
     file.close()
     # get new_activity_name
     cmd_out = os.popen("uiautomator2 current")
-    cmd_out.readline()              # {
-    cmd_out.readline()              # package
-    new_activity_name = cmd_out.readline().strip()[13:len(cmd_out.readline().strip())-2]
-    new_activity_name = new_activity_name[new_activity_name.rfind(".")+1:]
+    cmd_out.readline()  # {
+    cmd_out.readline()  # package
+    new_activity_name = cmd_out.readline().strip()
+    new_activity_name = new_activity_name[13:len(new_activity_name) - 1]
+    new_activity_name = new_activity_name[new_activity_name.rfind(".") + 1:]
+    if new_activity_name.endswith("\""):
+        new_activity_name = new_activity_name[:-1]
     print("current activity = " + new_activity_name)
     cmd_out.readlines()
 
@@ -189,56 +194,81 @@ if __name__ == "__main__":
         # 没有设置break出while循环的条件: 1）timeout 2)reset
         # 需要手动停止 或者把最后一行的break的注释去掉
         while True:
-            for j in range(0,4):
+            time.sleep(2)
+            for j in range(0, 4):
                 print()
+
             # <<7>> state t = state t+1
-            current_state = next_state
+            # current_state = next_state
 
             # <<8>> A = getOrInferEvents(Q_table, state t)
             # element = list[]，暂时只实现了点击
             element = d(clickable=True)
+            print("element =")
+            for n in range(0, len(element)):
+                print(element[n].get_text())
             ele_size = len(element)
-            print("element number:"+str(ele_size))
+            print("element number:" + str(ele_size))
+
+            if ele_size == 0:
+                d.press("back")
+                continue
+            else:
+                current_state = next_state
+
             # 如果是新状态，就需要更新Q-table
             # 如果是已有状态，就不需要更新，直接在下一步里找
             if current_state == xml_count:
-                agent.q_table.setdefault(new_activity_name, {})
-                state_dict = {}
-                # 第一次做 unexecuted actions 的奖励 = 1000，做完被归零
                 for i in range(0, ele_size):
-                    state_dict[i] = 1000
-                agent.q_table[new_activity_name][current_state] = state_dict
+                    agent.q_table[new_activity_name][current_state][i] = 1000
+                # agent.q_table.setdefault(new_activity_name, {})
+                # state_dict = {}
+                # # 第一次做 unexecuted actions 的奖励 = 1000，做完被归零
+                # for i in range(0, ele_size):
+                #     state_dict[i] = 1000
+                # agent.q_table[new_activity_name][current_state] = state_dict
             print("Q-table:")
-            print(agent.q_table)
+            print(agent.q_table[new_activity_name][current_state])
 
-            # <<9>> action t = getAction(Q_table, state t)
-            # action = "1" or "volume_up"
-            action = agent.pick_action(new_activity_name, current_state, ele_size)
+            while True:
+                try:
+                    # <<9>> action t = getAction(Q_table, state t)
+                    # action = "1" or "volume_up",类型为string
+                    action = agent.pick_action(new_activity_name, current_state, ele_size)
 
-            # <<10>> state t+1, activity t+1 = execute(action)
+                    # <<10>> state t+1, activity t+1 = execute(action)
+
+                    # 如果是UI event，就直接点击对应的widget
+                    if action.isdigit():
+                        print("picking ui event:" + action)
+                        element[int(action)].click()
+                    # 如果是系统事件，则press
+                    else:
+                        print("picking system event:")
+                        d.press(action)
+                    break
+                except:
+                    print("UIOBJECT NOT FOUND, RETRYING...")
+                    time.sleep(1)
+
             xml_count = xml_count + 1
             # 保存跳转前的activity name
             old_activity_name = new_activity_name
-            # 如果是UI event，就直接点击对应的widget
-            if action.isdigit():
-                print("picking ui event:"+action)
-                element[int(action)].click()
-            # 如果是系统事件，则press
-            else:
-                print("picking system event:")
-                d.press(action)
             # 获得新状态的new_activity_name
             cmd_out = os.popen("uiautomator2 current")
             cmd_out.readline()  # {
             cmd_out.readline()  # package
-            new_activity_name = cmd_out.readline().strip()[13:len(cmd_out.readline().strip()) - 2]
+            new_activity_name = cmd_out.readline().strip()
+            new_activity_name = new_activity_name[13:len(new_activity_name) - 1]
             new_activity_name = new_activity_name[new_activity_name.rfind(".") + 1:]
+            if new_activity_name.endswith("\""):
+                new_activity_name = new_activity_name[:-1]
             print("current activity = " + new_activity_name)
             cmd_out.readlines()
             # 获得新的xml
             xml_path = "./output/xml/" + str(xml_count) + ".xml"
             xml = d.dump_hierarchy()
-            file = open(xml_path, "w")
+            file = open(xml_path, "w", encoding="utf-8")
             file.write(xml)
             file.close()
 
@@ -257,7 +287,6 @@ if __name__ == "__main__":
             # <<19>>     memoryBuffer = mB ∪ (activity t+1, new_vector)
             # <<20>>     reward = large_reward
             # <<21>> end if
-            # todo
 
             # 应该放在这里的相似度对比
             similarity = 0
@@ -280,12 +309,12 @@ if __name__ == "__main__":
                 print("No new activity, calculating similarity")
                 for root, dirs, files in os.walk("./output/tree/" + new_activity_name):
                     for trees in files:
-                        existing_tree_file = open("./output/tree/" + new_activity_name+"/"+trees)
+                        existing_tree_file = open("./output/tree/" + new_activity_name + "/" + trees)
                         compared_tree = existing_tree_file.readline().strip()
                         existing_tree_file.close()
                         cmd_out = os.popen("python -m apted -t " + new_tree + " " + compared_tree)
                         edit_distance = int(cmd_out.readline().strip())
-                        print("get edit_distance:"+str(edit_distance))
+                        print("get edit_distance:" + str(edit_distance))
                         # 相似度 = 1 - d/max(n1,n2)，n1n2节点数 = 处理后树的长度除2
                         # 相似度需要与编辑距离同步更新
                         # ??? 究竟是最小的还是最大的
@@ -297,14 +326,14 @@ if __name__ == "__main__":
                             potential_skip_obj = trees
                             max_sim = similarity
                 print("max similarity = " + str(max_sim))
-                if max_sim <1:
+                if max_sim < 1:
                     agent.memory_buffer.store(new_activity_name, vector)
                     ext.write(str(vector), new_activity_name, new_tree)
                     next_state = xml_count
                     reward = 500
                 else:
                     # potential_skip_obj = "0.txt"
-                    next_state = int(potential_skip_obj[0:len(potential_skip_obj)-4])
+                    next_state = int(potential_skip_obj[0:len(potential_skip_obj) - 4])
                     reward = -500
 
             # print current info
@@ -313,18 +342,17 @@ if __name__ == "__main__":
             print("new act = " + new_activity_name)
             print("old state = " + str(current_state))
             print("new state = " + str(next_state))
-            print("action = " + str(action))
+            print("action = " + action)
             print("reward = " + str(reward))
             print("xml count = " + str(xml_count))
 
             # <<21>>
             # update q_table
             if action.isdigit():
-                agent.learn(old_activity_name, new_activity_name, current_state, next_state, action, reward )
+                agent.learn(old_activity_name, new_activity_name, current_state, next_state, action, reward)
                 print("learning...")
             print("Q-table:")
             print(agent.q_table)
-
 
             # if done:
             #    break
